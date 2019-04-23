@@ -59,11 +59,11 @@ Provides definitions about:
 
 /// Indicate that JTAG communication mode is available at the Debug Port.
 /// This information is returned by the command \ref DAP_Info as part of <b>Capabilities</b>.
-#define DAP_JTAG                0               ///< JTAG Mode: 1 = available, 0 = not available.
+#define DAP_JTAG                1               ///< JTAG Mode: 1 = available, 0 = not available.
 
 /// Configure maximum number of JTAG devices on the scan chain connected to the Debug Access Port.
 /// This setting impacts the RAM requirements of the Debug Unit. Valid range is 1 .. 255.
-#define DAP_JTAG_DEV_CNT        0               ///< Maximum number of JTAG devices on scan chain
+#define DAP_JTAG_DEV_CNT        8               ///< Maximum number of JTAG devices on scan chain
 
 /// Default communication mode on the Debug Access Port.
 /// Used for the command \ref DAP_Connect when Port Default mode is selected.
@@ -223,7 +223,22 @@ Configures the DAP Hardware I/O pins for JTAG mode:
 __STATIC_INLINE void PORT_JTAG_SETUP(void)
 {
 #if (DAP_JTAG != 0)
-
+    pin_out_init(JTAG_TCLK_PIN_PORT,JTAG_TCLK_PIN_Bit);
+    JTAG_TCLK_PIN_PORT->BSRR=JTAG_TCLK_PIN;
+    
+    pin_out_init(JTAG_TMS_PIN_PORT,JTAG_TMS_PIN_Bit);
+    JTAG_TMS_PIN_PORT->BSRR=JTAG_TMS_PIN;
+    
+    pin_out_init(JTAG_TDI_OUT_PIN_PORT,JTAG_TDI_OUT_PIN_Bit);
+    JTAG_TDI_OUT_PIN_PORT->BSRR=JTAG_TDI_OUT_PIN;
+    
+    pin_out_od_init(JTAG_TRST_OUT_PIN_PORT, JTAG_TRST_OUT_PIN_Bit);
+    JTAG_TRST_OUT_PIN_PORT->BSRR=JTAG_TRST_OUT_PIN;
+    
+    pin_out_od_init(nRESET_PIN_PORT, nRESET_PIN_Bit);
+    nRESET_PIN_PORT->BSRR = nRESET_PIN;
+    
+    pin_in_init(JTAG_TDO_IN_PIN_PORT,JTAG_TDO_IN_PIN_Bit,1);
 #endif
 }
 
@@ -256,6 +271,11 @@ __STATIC_INLINE void PORT_OFF(void)
     pin_in_init(SWCLK_TCK_PIN_PORT, SWCLK_TCK_PIN_Bit, 0);
     pin_in_init(SWDIO_OUT_PIN_PORT, SWDIO_OUT_PIN_Bit, 0);
     pin_in_init(SWDIO_IN_PIN_PORT, SWDIO_IN_PIN_Bit, 0);
+    
+    //jtag
+    pin_in_init(JTAG_TRST_OUT_PIN_PORT, JTAG_TRST_OUT_PIN_Bit, 0);
+    pin_in_init(JTAG_TDI_OUT_PIN_PORT,JTAG_TDI_OUT_PIN_Bit,0);
+    pin_in_init(JTAG_TDO_IN_PIN_PORT,JTAG_TDO_IN_PIN_Bit,0);
 }
 
 // SWCLK/TCK I/O pin -------------------------------------
@@ -357,7 +377,7 @@ __STATIC_FORCEINLINE void PIN_SWDIO_OUT_DISABLE(void)
 */
 __STATIC_FORCEINLINE uint32_t PIN_TDI_IN(void)
 {
-    return (0);   // Not available
+     return ((JTAG_TDI_OUT_PIN_PORT->IDR & JTAG_TDI_OUT_PIN) ? 1 : 0);
 }
 
 /** TDI I/O pin: Set Output.
@@ -365,7 +385,10 @@ __STATIC_FORCEINLINE uint32_t PIN_TDI_IN(void)
 */
 __STATIC_FORCEINLINE void PIN_TDI_OUT(uint32_t bit)
 {
-    ;             // Not available
+    if (bit & 1)
+        JTAG_TDI_OUT_PIN_PORT->BSRR = JTAG_TDI_OUT_PIN;
+    else
+        JTAG_TDI_OUT_PIN_PORT->BRR = JTAG_TDI_OUT_PIN;
 }
 
 
@@ -376,7 +399,7 @@ __STATIC_FORCEINLINE void PIN_TDI_OUT(uint32_t bit)
 */
 __STATIC_FORCEINLINE uint32_t PIN_TDO_IN(void)
 {
-    return (0);   // Not available
+    return ((JTAG_TDO_IN_PIN_PORT->IDR & JTAG_TDO_IN_PIN) ? 1 : 0);
 }
 
 
@@ -387,7 +410,7 @@ __STATIC_FORCEINLINE uint32_t PIN_TDO_IN(void)
 */
 __STATIC_FORCEINLINE uint32_t PIN_nTRST_IN(void)
 {
-    return (0);   // Not available
+    return ((JTAG_TRST_OUT_PIN_PORT->IDR >> JTAG_TRST_OUT_PIN_Bit) & 1);
 }
 
 /** nTRST I/O pin: Set Output.
@@ -397,7 +420,10 @@ __STATIC_FORCEINLINE uint32_t PIN_nTRST_IN(void)
 */
 __STATIC_FORCEINLINE void PIN_nTRST_OUT(uint32_t bit)
 {
-    ;             // Not available
+    if (bit & 1)
+        JTAG_TRST_OUT_PIN_PORT->BSRR = JTAG_TRST_OUT_PIN;
+    else
+        JTAG_TRST_OUT_PIN_PORT->BRR = JTAG_TRST_OUT_PIN;
 }
 
 // nRESET Pin I/O------------------------------------------

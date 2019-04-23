@@ -72,6 +72,31 @@ COMPILER_ASSERT(DAPLINK_HIC_ID == DAPLINK_HIC_ID_STM32F103XB);
 #define SWDIO_IN_PIN                 GPIO_PIN_12
 #define SWDIO_IN_PIN_Bit             12
 
+
+//JTAG
+
+
+#define JTAG_TRST_OUT_PIN_PORT       GPIOB
+#define JTAG_TRST_OUT_PIN            GPIO_PIN_1
+#define JTAG_TRST_OUT_PIN_Bit        1
+
+#define JTAG_TCLK_PIN_PORT           SWCLK_TCK_PIN_PORT
+#define JTAG_TCLK_PIN                SWCLK_TCK_PIN
+#define JTAG_TCLK_PIN_Bit            SWCLK_TCK_PIN_Bit
+
+#define JTAG_TMS_PIN_PORT            SWDIO_OUT_PIN_PORT
+#define JTAG_TMS_PIN                 SWDIO_OUT_PIN
+#define JTAG_TMS_PIN_Bit             SWDIO_OUT_PIN_Bit
+
+#define JTAG_TDI_OUT_PIN_PORT        GPIOB
+#define JTAG_TDI_OUT_PIN             GPIO_PIN_0
+#define JTAG_TDI_OUT_PIN_Bit         0
+
+#define JTAG_TDO_IN_PIN_PORT         GPIOA
+#define JTAG_TDO_IN_PIN              GPIO_PIN_10
+#define JTAG_TDO_IN_PIN_Bit          10
+
+
 //LEDs
 //USB status LED
 #define RUNNING_LED_PORT             GPIOA
@@ -80,15 +105,15 @@ COMPILER_ASSERT(DAPLINK_HIC_ID == DAPLINK_HIC_ID_STM32F103XB);
 
 #define PIN_HID_LED_PORT             GPIOA
 #define PIN_HID_LED                  GPIO_PIN_9
-#define PIN_HID_LED_Bit              9
+#define PIN_HID_LED_Bit              8
 
 #define PIN_CDC_LED_PORT             GPIOA
 #define PIN_CDC_LED                  GPIO_PIN_9
-#define PIN_CDC_LED_Bit              9
+#define PIN_CDC_LED_Bit              7
 
 #define PIN_MSC_LED_PORT             GPIOA
 #define PIN_MSC_LED                  GPIO_PIN_9
-#define PIN_MSC_LED_Bit              9
+#define PIN_MSC_LED_Bit              6
 
 
 #endif
